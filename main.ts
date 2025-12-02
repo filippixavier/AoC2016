@@ -1,4 +1,5 @@
-import language from './assets/en.json' with { type: "json" };
+import language from './assets/en.json' with { type: 'json' };
+import type { Day } from './days/days.ts';
 
 const XMASTREE = './assets/xmastree.txt';
 
@@ -8,13 +9,20 @@ async function displayHeader() {
   console.log(language.welcome);
 }
 
-function repl() {
+async function repl() {
   while(true) {
-    const input = prompt(">");
-    switch(input) {
-      case "quit":
-      case "exit":
-        return;
+    const input = prompt('>');
+    if (input === 'quit' || input === 'exit') {
+      return;
+    }
+    const day = parseInt(input || '', 10);
+    if (day > 0 && day <= 25) {
+      try {
+        const dayModule: Day = await import(`./days/day${day}.ts`);
+        await dayModule.exec();
+      } catch (e: unknown) {
+        console.error((e as Error).message);
+      }
     }
   }
 }
