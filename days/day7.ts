@@ -20,10 +20,38 @@ function star1(ips: string[]) {
   console.log(`There are ${counter} ips that support TLS`);
 }
 
+function star2(ips: string[]) {
+  const hypernetReg = /\[\w+\]/g;
+  const counter = ips.filter((ip) => {
+    const hypernets = ip.match(hypernetReg) || [];
+    const nets = ip.split(hypernetReg);
+
+    for (const net of nets) {
+      // Cannot use regex because of overlapping
+      for (let i = 0, len = net.length; i < len - 2; i++) {
+        if (net[i] === net[i + 1] || net[i] !== net[i + 2]) {
+          continue;
+        }
+        const bab = `${net[i + 1]}${net[i]}${net[i + 1]}`;
+
+        for (const hypernet of hypernets) {
+          if (hypernet.includes(bab)) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }).length;
+  console.log(counter);
+}
+
 export async function exec() {
   console.log("Day 7: Internet Protocol Version 7");
 
   const input = await getInput("./inputs/day7.txt");
 
   star1(input);
+  star2(input);
 }
