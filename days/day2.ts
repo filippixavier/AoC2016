@@ -1,12 +1,21 @@
 type Direction = "U" | "D" | "L" | "R";
 
-const KEYBOARD = [
+const KEYPAD = [
   ["1", "2", "3"],
   ["4", "5", "6"],
   ["7", "8", "9"],
 ];
 
+const DESIGNERKEYPAD = [
+  ["", "", "1", "", ""],
+  ["", "2", "3", "4", ""],
+  ["5", "6", "7", "8", "9"],
+  ["", "A", "B", "C", ""],
+  ["", "", "D", "", ""],
+];
+
 const START = [1, 1];
+const DESIGNERSTART = [2, 0];
 
 const DIRECTIONS: {
   [x in Direction]: number[];
@@ -44,10 +53,32 @@ function star1(instructions: Direction[][]) {
       }
       current = newPos;
     }
-    code += KEYBOARD[current[0]][current[1]];
+    code += KEYPAD[current[0]][current[1]];
   }
 
   console.log(`The bathroom code is: ${code}`);
+}
+
+function star2(instructions: Direction[][]) {
+  let code = "";
+  let current = DESIGNERSTART;
+  for (const line of instructions) {
+    for (const direction of line) {
+      const newPos = [
+        current[0] + DIRECTIONS[direction][0],
+        current[1] + DIRECTIONS[direction][1],
+      ];
+
+      if (!DESIGNERKEYPAD[newPos[0]]?.[newPos[1]]) {
+        continue;
+      }
+
+      current = newPos;
+    }
+    code += DESIGNERKEYPAD[current[0]][current[1]];
+  }
+
+  console.log(`On the ✨designer✨ keypad, the bathroom code is: ${code}`);
 }
 
 export async function exec() {
@@ -56,4 +87,5 @@ export async function exec() {
   const input = await getInput("./inputs/day2.txt");
 
   star1(input);
+  star2(input);
 }
