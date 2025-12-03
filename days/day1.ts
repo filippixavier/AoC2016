@@ -37,6 +37,29 @@ function star1(input: Direction[]) {
 }
 
 function star2(input: Direction[]) {
+        console.log('Star 2:');
+    let pos = [0, 0];
+    let facing = 0;
+    const visited = new Set(pos.toString());
+    outer: for(const {isLeft, steps} of input) {
+        if(isLeft) {
+            facing -= 1;
+            if(facing < 0) {
+                facing = 3;
+            }
+        } else {
+            facing = (facing + 1 ) % 4;
+        }
+        for (let i = 0; i < steps; i++) {
+            pos = [pos[0] + DIRECTIONS[facing][0], pos[1] + DIRECTIONS[facing][1]];
+            if (visited.has(pos.toString())) {
+                break outer;
+            }
+            visited.add(pos.toString());
+        }
+    }
+
+    console.log(`We are ${Math.abs(pos[0]) + Math.abs(pos[1])} steps away from the first location visited twice: the True Eastern HQ`);
 }
 
 export async function exec() {
