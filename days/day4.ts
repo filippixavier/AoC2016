@@ -4,6 +4,8 @@ type RoomDescriptor = {
   checksum: string;
 };
 
+const BASE = "a".charCodeAt(0);
+
 async function getInput(src: string): Promise<RoomDescriptor[]> {
   const input = await Deno.readTextFile(src);
 
@@ -55,7 +57,28 @@ function star1(input: RoomDescriptor[]) {
     }
   }
 
-  console.log(`The sum ids of the real rooms is: ${total}`);
+  console.log(`The ids sum of the real rooms is: ${total}`);
+}
+
+function shift(letter: string, id: number): string {
+  return String.fromCharCode(
+    (((letter.charCodeAt(0) - BASE) + id) % 26) + BASE,
+  );
+}
+
+function star2(input: RoomDescriptor[]) {
+  const realRooms = input.filter(validateChecksum);
+
+  for (const { name, id } of realRooms) {
+    const fullName = name.join(" ").split("").map((letter) =>
+      letter === " " ? letter : shift(letter, id)
+    ).join("");
+
+    if (fullName.includes("north")) {
+      console.log(`Sector Id of the ${fullName}: ${id}`);
+      return;
+    }
+  }
 }
 
 export async function exec() {
@@ -64,4 +87,5 @@ export async function exec() {
   const input = await getInput("./inputs/day4.txt");
 
   star1(input);
+  star2(input);
 }
