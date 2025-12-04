@@ -32,7 +32,7 @@ function rotateColumn(screen: Screen, colNum: number, offset: number) {
 
 function displayScreen(screen: Screen) {
   for (const line of screen) {
-    console.log(line.map((elem) => elem ? "#" : ".").join(""));
+    console.log(line.map((elem) => elem ? "#" : " ").join(""));
   }
   console.log("\n");
 }
@@ -69,7 +69,7 @@ async function getInput(src: string): Promise<Instruction[]> {
   });
 }
 
-function star1(instructions: Instruction[]) {
+function star1(instructions: Instruction[]): Screen {
   const screen: boolean[][] = [];
 
   for (let i = 0; i < HEIGHT; i++) {
@@ -86,6 +86,13 @@ function star1(instructions: Instruction[]) {
   const lit = screen.flat(1).reduce((acc, elem) => acc + (+elem), 0);
 
   console.log(`There are ${lit} lit pixels on the screen`);
+
+  return screen;
+}
+
+function star2(screen: Screen) {
+  console.log("Screen attempt to display this:");
+  displayScreen(screen);
 }
 
 export async function exec() {
@@ -93,5 +100,5 @@ export async function exec() {
 
   const input = await getInput("./inputs/day8.txt");
 
-  star1(input);
+  star2(star1(input));
 }
