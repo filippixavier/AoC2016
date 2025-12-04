@@ -29,18 +29,18 @@ class Bot {
   }
 }
 
-function star1(input: string, target: [number, number]) {
+function star1(input: string, target: [number, number]): number[] {
   const bots: Bot[] = [];
   const output: number[] = [];
 
   for (const initBot of input.matchAll(REGINITIALIZATION)) {
     const id = parseInt(initBot[2], 10);
     const value = parseInt(initBot[1], 10);
-    
+
     if (bots[id]) {
-        bots[id].add(value);
+      bots[id].add(value);
     } else {
-        bots[id] = new Bot(value);
+      bots[id] = new Bot(value);
     }
   }
 
@@ -60,9 +60,8 @@ function star1(input: string, target: [number, number]) {
       lockdown = true;
       const [low, high] = bots[id].gives();
 
-      if(high === target[0] && low === target[1]) {
+      if (high === target[0] && low === target[1]) {
         console.log(`Bot ${id} is responsible for comparing the targets chips`);
-        return;
       }
 
       if (op[2] === "bot") {
@@ -87,16 +86,20 @@ function star1(input: string, target: [number, number]) {
     }
 
     if (!lockdown) {
-        throw new Error('LOCKDOWN!');
+      throw new Error("LOCKDOWN!");
     }
   }
+
+  return output;
 }
 
-// Pas 67
+function star2(outputs: number[]) {
+    console.log(`The values in the third three output mulitplied is: ${outputs[0] * outputs[1] * outputs[2]}`);
+}
 
 export async function exec() {
   console.log("Day 10: Balance Bots");
 
   const input = await getInput("./inputs/day10.txt");
-  star1(input, [61, 17]);
+  star2(star1(input, [61, 17]));
 }
