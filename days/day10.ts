@@ -94,7 +94,11 @@ function star1(input: string, target: [number, number]): number[] {
 }
 
 function star2(outputs: number[]) {
-    console.log(`The values in the third three output mulitplied is: ${outputs[0] * outputs[1] * outputs[2]}`);
+  console.log(
+    `The values in the third three output mulitplied is: ${
+      outputs[0] * outputs[1] * outputs[2]
+    }`,
+  );
 }
 
 export async function exec() {
