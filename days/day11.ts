@@ -45,6 +45,29 @@ function getTuple<T>(array: T[]): T[][] {
   return result;
 }
 
+// Got the idea from ChatGPT... Implementation is mine through.
+function getCanonicalSignature(
+  input: string[][],
+  currentFloor: number,
+): string {
+  const signature: string[] = [];
+  for (const floor of input) {
+    const [microchip, generator] = [
+      floor.filter((elem) => elem.endsWith("M")),
+      floor.filter((elem) => elem.endsWith("G")),
+    ];
+    const paired = microchip.length && microchip.length <= generator.length
+      ? microchip.length
+      : 0;
+    const unapairedG = generator.length - microchip.length;
+    const unapairedM = generator.length ? 0 : microchip.length;
+
+    signature.push(`${paired}p:${unapairedM}m:${unapairedG}g`);
+  }
+
+  return `${currentFloor}:${signature.join("|")}`;
+}
+
 function star1(input: string[][]) {
   type State = {
     floors: string[][];
@@ -57,22 +80,26 @@ function star1(input: string[][]) {
   }];
 
   const visited: Set<string> = new Set();
+  const test: Map<string, string[][]> = new Map();
 
   let steps = 0;
 
   while (states.length) {
     const nextState: State[] = [];
     for (const state of states) {
-      const stateSignature = state.current + ":" +
-        state.floors.map((elem) => elem.toSorted().join(".")).toString();
+      const stateSignature = getCanonicalSignature(state.floors, state.current);
       if (visited.has(stateSignature)) {
         continue;
       }
+      const canonicalSign = getCanonicalSignature(state.floors, state.current);
 
+      test.set(canonicalSign, state.floors.map((elem) => [...elem]));
       visited.add(stateSignature);
 
       if (state.floors.slice(0, 3).every((elem) => !elem.length)) {
-        console.log(`Moving every component to the 4th floor require ${steps} steps`);
+        console.log(
+          `Moving every component to the 4th floor require ${steps} steps`,
+        );
         return;
       }
       for (const tuple of getTuple(state.floors[state.current])) {
@@ -84,7 +111,11 @@ function star1(input: string[][]) {
           continue;
         }
 
-        for(const nextFloor of [state.current - 1, state.current + 1].filter(fl => fl >= 0 && fl <= 3)){
+        for (
+          const nextFloor of [state.current - 1, state.current + 1].filter(
+            (fl) => fl >= 0 && fl <= 3,
+          )
+        ) {
           const floorCheck = state.floors[nextFloor].concat(tuple);
           if (isFried(floorCheck)) {
             continue;
@@ -105,9 +136,16 @@ function star1(input: string[][]) {
   }
 }
 
+function star2(input: string[][]) {
+  input[0] = input[0].concat(["ELM", "ELG", "DIM", "DIG"]);
+
+  star1(input);
+}
+
 export async function exec() {
   console.log("Day 11: Radioisotope Thermoelectric Generators");
   const input = await getInput("./inputs/day11.txt");
 
   star1(input);
+  star2(input);
 }
