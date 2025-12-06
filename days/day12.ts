@@ -90,7 +90,26 @@ function star1(input: string[]) {
     line = operations[line](registers, line);
   }
 
-  console.log(registers['a']);
+  console.log(
+    `After executing the code, the value in register A is: ${registers["a"]}`,
+  );
+}
+
+function star2(input: string[]) {
+  const registers: Registers = { a: 0, b: 0, c: 1, d: 0 };
+  let line = 0;
+
+  const operations = toOperations(input);
+
+  while (line < input.length) {
+    line = operations[line](registers, line);
+  }
+
+  console.log(
+    `After executing the code while having register C initialized to 1, the value in register A is: ${
+      registers["a"]
+    }`,
+  );
 }
 
 export async function exec() {
@@ -98,4 +117,5 @@ export async function exec() {
   const input = await getInput("./inputs/day12.txt");
 
   star1(input);
+  star2(input);
 }
