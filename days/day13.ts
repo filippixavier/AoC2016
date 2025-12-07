@@ -4,7 +4,7 @@ async function getInput(src: string): Promise<number> {
 }
 
 type TargetsTuple = [number, number];
-const TARGET: TargetsTuple = [31, 39];
+const TARGET: TargetsTuple = [31, 39] as const;
 
 function getTileStatus(
   [x, y]: [number, number],
@@ -28,7 +28,7 @@ function getTileStatus(
 const NEIGHBORS = [[1, 0], [0, 1], [-1, 0], [0, -1]];
 
 function star1(designerNumber: number, [targetX, targetY]: TargetsTuple) {
-  const officeMap = {};
+  const officeMap: Record<string, boolean> = {};
   const visited: Set<string> = new Set("1,1");
   let toVisit: TargetsTuple[] = [[1, 1]];
   let steps = 0;
@@ -38,7 +38,7 @@ function star1(designerNumber: number, [targetX, targetY]: TargetsTuple) {
 
     for (const [x, y] of toVisit) {
       if (x === targetX && y === targetY) {
-        console.log(steps);
+        console.log(`You can reach the target with at lease ${steps} steps`);
         return;
       }
 
@@ -61,9 +61,41 @@ function star1(designerNumber: number, [targetX, targetY]: TargetsTuple) {
   }
 }
 
+function star2(designerNumber: number) {
+  const officeMap: Record<string, boolean> = {};
+  const visited: Set<string> = new Set("1,1");
+  let toVisit: TargetsTuple[] = [[1, 1]];
+
+  for (let i = 0; i < 50; i++) {
+    const nextVisit: TargetsTuple[] = [];
+    for (const [x, y] of toVisit) {
+      for (
+        const neighbor of NEIGHBORS.map(
+          (n) => [n[0] + x, n[1] + y] as TargetsTuple,
+        ).filter((elem) =>
+          elem[0] >= 0 && elem[1] >= 0 &&
+          getTileStatus(elem, designerNumber, officeMap) &&
+          !visited.has(elem.toString())
+        )
+      ) {
+        visited.add(neighbor.toString());
+        nextVisit.push(neighbor);
+      }
+    }
+    toVisit = nextVisit;
+  }
+
+  console.log(
+    `You can reach ${
+      Object.entries(officeMap).filter(([_, v]) => v).length
+    } different locations with at most 50 steps`,
+  );
+}
+
 export async function exec() {
   console.log("Day 13: Maze of Twisty Little Cubicles");
 
   const input = await getInput("./inputs/day13.txt");
   star1(input, TARGET);
+  star2(input);
 }
